@@ -4,9 +4,9 @@ The worst python IDE ✨
 # Installation
 Make sure you have python3 installed
 ```
-    git clone https://github.com/Lilkedus/Codeit.git
-    cd Codeit
-    python3 index.py
+git clone https://github.com/Lilkedus/Codeit.git
+cd Codeit
+python3 index.py
 ```
 
 # Contributing
