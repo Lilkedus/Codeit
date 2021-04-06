@@ -1,11 +1,15 @@
 from tkinter import *
 from tkinter.filedialog import asksaveasfilename, askopenfilename
+from sys import platform
 import subprocess
 
 compiler = Tk()
 compiler.title("CodeIt")
+compiler.attributes("-fullscreen", True)
+compiler.configure(bg="#111111")
 
 file_path = ""
+outputStr = ""
 
 
 def set_file_path(path):
@@ -44,6 +48,8 @@ def run():
     process = subprocess.Popen(
         command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     output, error = process.communicate()
+    global outputStr
+    outputStr = output
     code_output.insert("1.0", output)
     code_output.insert("1.0", error)
 
@@ -51,13 +57,33 @@ def run():
 def run_new_window():
     if file_path == "":
         warning_prompt = Toplevel()
-        text = Label(warning_prompt, text="There is no file open")
+        warning_prompt.geometry('300x200-100+100')
+        text = Label(warning_prompt, text="Please save your work")
         text.pack()
         return
-    # data = code_output.
+    print(outputStr)
+    # Render the content from the terminal
+    command = f"python {file_path}"
+    process = subprocess.Popen(
+        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    output, error = process.communicate()
+
     terminal_prompt = Toplevel()
-    terminal = Label(terminal_prompt, text="")
+    terminal = Label(terminal_prompt, text=output)
     terminal.pack()
+
+
+def get_font():
+    if platform == "darwin":
+        return "Menlo"
+    elif platform == "win32" or platform == "win64":
+        return "Consolas"
+    elif platform == "linux" or platform == "linux2":
+        return "Ubuntu Monospace"
+
+
+def render_file_name():
+    if file_path
 
 
 menu_bar = Menu(compiler)
@@ -75,13 +101,19 @@ run_bar.add_command(label="Run", command=run)
 run_bar.add_command(label="Run in a seperate window", command=run_new_window)
 menu_bar.add_cascade(label="Run", menu=run_bar)
 
-compiler.config(menu=menu_bar)
+compiler.config(menu=menu_bar, pady=10)
 
-editor = Text()
+text = Label(text="Hey there", bg="#111111", fg="white", font=(get_font()))
+text.pack()
+
+editor = Text(width="1000", highlightthickness=0, bg="#111111", fg="white",
+              font=(get_font(), 0), padx=10, pady=10)
 editor.pack()
 
+
 # Terminal
-code_output = Text(height=10)
+code_output = Text(height=10, width=1000, highlightthickness=0,
+                   bg="#111111", fg="white", relief=GROOVE, borderwidth=1, padx=10, pady=10)
 code_output.pack()
 
 compiler.mainloop()
