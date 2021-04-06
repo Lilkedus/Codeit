@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter.filedialog import asksaveasfilename, askopenfilename
 from sys import platform
 import subprocess
+import os
 
 compiler = Tk()
 compiler.title("CodeIt")
@@ -10,6 +11,7 @@ compiler.configure(bg="#111111")
 
 file_path = ""
 outputStr = ""
+file_name = ""
 
 
 def set_file_path(path):
@@ -17,16 +19,20 @@ def set_file_path(path):
     file_path = path
 
 
-def open_file():
+def open_file(_):
     path = askopenfilename(filetypes=[("Python files", "*.py")])
     with open(path, "r") as file:
         code = file.read()
         editor.delete("1.0", END)
+        file_name = os.path.basename(path)
+        text = Label(text=file_name, bg="#111111",
+                     fg="white", font=(get_font()), padx=12, pady=123)
         editor.insert("1.0", code)
         set_file_path(path)
+        text.pack()
 
 
-def save_as():
+def save_as(_):
     if file_path == "":
         path = asksaveasfilename(filetypes=[("Python files", "*.py")])
     else:
@@ -37,7 +43,7 @@ def save_as():
         set_file_path(path)
 
 
-def run():
+def run(_):
     if file_path == "":
         save_prompt = Toplevel()
         text = Label(save_prompt, text="Please save your code")
@@ -54,7 +60,7 @@ def run():
     code_output.insert("1.0", error)
 
 
-def run_new_window():
+def run_new_window(_):
     if file_path == "":
         warning_prompt = Toplevel()
         warning_prompt.geometry('300x200-100+100')
@@ -69,8 +75,10 @@ def run_new_window():
     output, error = process.communicate()
 
     terminal_prompt = Toplevel()
+    terminal_prompt.geometry("300x200")
     terminal = Label(terminal_prompt, text=output)
     terminal.pack()
+    print(file_path)
 
 
 def get_font():
@@ -83,37 +91,52 @@ def get_font():
 
 
 def render_file_name():
-    if file_path
+    if not file_path:
+        return "Welcome"
+    else:
+        print(os.path.basename(file_path))
 
 
 menu_bar = Menu(compiler)
 
 file_menu = Menu(menu_bar, tearoff=0)
-file_menu.add_command(label="Open", command=open_file)
-file_menu.add_command(label="Save", command=save_as)
-file_menu.add_command(label="Save As", command=save_as)
-file_menu.add_command(label="Exit", command=exit)
+file_menu.add_command(label="Open", command=open_file, accelerator="cmd+o")
+file_menu.add_command(label="Save", command=save_as, accelerator="cmd+s")
+file_menu.add_command(label="Save As", command=save_as,
+                      accelerator="cmd+shift+s")
+file_menu.add_command(label="Exit", command=exit, accelerator="cmd-w")
 menu_bar.add_cascade(label="File", menu=file_menu)
 
 
 run_bar = Menu(menu_bar, tearoff=0)
-run_bar.add_command(label="Run", command=run)
-run_bar.add_command(label="Run in a seperate window", command=run_new_window)
+run_bar.add_command(label="Run", command=run, accelerator="cmd+r")
+run_bar.add_command(label="Run in a seperate window",
+                    command=run_new_window, accelerator="cmd+shift+r")
 menu_bar.add_cascade(label="Run", menu=run_bar)
 
 compiler.config(menu=menu_bar, pady=10)
 
-text = Label(text="Hey there", bg="#111111", fg="white", font=(get_font()))
+text = Label(text=file_name, bg="#111111", fg="white", font=(get_font()))
 text.pack()
 
-editor = Text(width="1000", highlightthickness=0, bg="#111111", fg="white",
-              font=(get_font(), 0), padx=10, pady=10)
+
+editor = Text(width="1000", height="44", highlightthickness=0, bg="#111111", fg="white",
+              font=(get_font(), 0), padx=10, pady=10, insertbackground="red")
 editor.pack()
+
+# Shortcuts
+compiler.bind("<Command-r>", run)
+compiler.bind("<Command-Shift-r>", run_new_window)
+compiler.bind("<Command-o>", open_file)
+compiler.bind("<Command-s>", save_as)
+compiler.bind("<Command-Shift-s>", save_as)
+compiler.bind("<Command-w>", exit)
 
 
 # Terminal
 code_output = Text(height=10, width=1000, highlightthickness=0,
-                   bg="#111111", fg="white", relief=GROOVE, borderwidth=1, padx=10, pady=10)
-code_output.pack()
+                   bg="#1e1e1e", fg="white", relief=GROOVE, borderwidth=1, padx=10, pady=10)
+# code_output.place(re)
+code_output.pack(side=BOTTOM)
 
 compiler.mainloop()
