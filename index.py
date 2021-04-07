@@ -19,7 +19,7 @@ def set_file_path(path):
     file_path = path
 
 
-def open_file(_):
+def open_file(null=None):
     path = askopenfilename(filetypes=[("Python files", "*.py")])
     with open(path, "r") as file:
         code = file.read()
@@ -32,7 +32,7 @@ def open_file(_):
         text.pack()
 
 
-def save_as(_):
+def save_as(null=None):
     if file_path == "":
         path = asksaveasfilename(filetypes=[("Python files", "*.py")])
     else:
@@ -43,7 +43,7 @@ def save_as(_):
         set_file_path(path)
 
 
-def run(_):
+def run(null=None):
     if file_path == "":
         save_prompt = Toplevel()
         text = Label(save_prompt, text="Please save your code")
@@ -60,7 +60,7 @@ def run(_):
     code_output.insert("1.0", error)
 
 
-def run_new_window(_):
+def run_new_window(null=None):
     if file_path == "":
         warning_prompt = Toplevel()
         warning_prompt.geometry('300x200-100+100')
@@ -99,20 +99,20 @@ def render_file_name():
 
 def shortcut_based_on_os(letter):
     if platform == "darwin":
-        return f"<Command-{letter}>"
+        return "<Command-" + letter + ">"
     elif platform == "win32":
-        return "<Control-{letter}>"
+        return "<Control-" + letter + ">"
     elif platform == "linux" or platform == "linux2":
-        return "<Control-{letter}>"
+        return "<Control-" + letter + ">"
 
 
 def accelerator_basesd_on_os(letter):
     if platform == "darwin":
         return f"cmd+{letter}"
     elif platform == "win32":
-        return f"ctrl+{letter}"
+        return f"Ctrl+{letter}"
     elif platform == "linux" or platform == "linux2":
-        return f"ctrl+{letter}"
+        return f"Ctrl+{letter}"
 
 
 menu_bar = Menu(compiler)
@@ -142,23 +142,23 @@ text = Label(text=file_name, bg="#111111", fg="white", font=(get_font()))
 text.pack()
 
 
-editor = Text(width=1000, height=40, highlightthickness=0, bg="#111111", fg="white",
+editor = Text(width=1000, height=30, highlightthickness=0, bg="#111111", fg="white",
               font=(get_font(), 0), padx=10, pady=10, insertbackground="red")
 editor.pack()
 
 # Shortcuts
 compiler.bind(shortcut_based_on_os("r"), run)
 compiler.bind(shortcut_based_on_os("Shift-r"), run_new_window)
-compiler.bind("<Command-o>", open_file)
+compiler.bind(shortcut_based_on_os("o"), open_file)
 compiler.bind(shortcut_based_on_os("s"), save_as)
 compiler.bind(shortcut_based_on_os("Shift-s"), save_as)
 compiler.bind(shortcut_based_on_os("w"), exit)
 
 
 # Terminal
-code_output = Text(height=10, width=1000, highlightthickness=0,
+code_output = Text(height=20, width=1000, highlightthickness=0,
                    bg="#1e1e1e", fg="white", relief=GROOVE, borderwidth=1, padx=10, pady=10)
 # code_output.place(re)
-code_output.pack(side=BOTTOM)
+code_output.pack()
 
 compiler.mainloop()
