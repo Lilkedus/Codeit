@@ -6,7 +6,7 @@ import os
 
 compiler = Tk()
 compiler.title("CodeIt")
-compiler.attributes("-fullscreen", True)
+compiler.attributes("-fullscreen", False)
 compiler.configure(bg="#111111")
 
 file_path = ""
@@ -97,21 +97,43 @@ def render_file_name():
         print(os.path.basename(file_path))
 
 
+def shortcut_based_on_os(letter):
+    if platform == "darwin":
+        return f"<Command-{letter}>"
+    elif platform == "win32":
+        return "<Control-{letter}>"
+    elif platform == "linux" or platform == "linux2":
+        return "<Control-{letter}>"
+
+
+def accelerator_basesd_on_os(letter):
+    if platform == "darwin":
+        return f"cmd+{letter}"
+    elif platform == "win32":
+        return f"ctrl+{letter}"
+    elif platform == "linux" or platform == "linux2":
+        return f"ctrl+{letter}"
+
+
 menu_bar = Menu(compiler)
 
 file_menu = Menu(menu_bar, tearoff=0)
-file_menu.add_command(label="Open", command=open_file, accelerator="cmd+o")
-file_menu.add_command(label="Save", command=save_as, accelerator="cmd+s")
+file_menu.add_command(label="Open", command=open_file,
+                      accelerator=accelerator_basesd_on_os("o"))
+file_menu.add_command(label="Save", command=save_as,
+                      accelerator=accelerator_basesd_on_os("s"))
 file_menu.add_command(label="Save As", command=save_as,
-                      accelerator="cmd+shift+s")
-file_menu.add_command(label="Exit", command=exit, accelerator="cmd-w")
+                      accelerator=accelerator_basesd_on_os("shit+s"))
+file_menu.add_command(label="Exit", command=exit,
+                      accelerator=accelerator_basesd_on_os("w"))
 menu_bar.add_cascade(label="File", menu=file_menu)
 
 
 run_bar = Menu(menu_bar, tearoff=0)
-run_bar.add_command(label="Run", command=run, accelerator="cmd+r")
+run_bar.add_command(label="Run", command=run,
+                    accelerator=accelerator_basesd_on_os("r"))
 run_bar.add_command(label="Run in a seperate window",
-                    command=run_new_window, accelerator="cmd+shift+r")
+                    command=run_new_window, accelerator=accelerator_basesd_on_os("shift+r"))
 menu_bar.add_cascade(label="Run", menu=run_bar)
 
 compiler.config(menu=menu_bar, pady=10)
@@ -120,17 +142,17 @@ text = Label(text=file_name, bg="#111111", fg="white", font=(get_font()))
 text.pack()
 
 
-editor = Text(width="1000", height="44", highlightthickness=0, bg="#111111", fg="white",
+editor = Text(width=1000, height=40, highlightthickness=0, bg="#111111", fg="white",
               font=(get_font(), 0), padx=10, pady=10, insertbackground="red")
 editor.pack()
 
 # Shortcuts
-compiler.bind("<Command-r>", run)
-compiler.bind("<Command-Shift-r>", run_new_window)
+compiler.bind(shortcut_based_on_os("r"), run)
+compiler.bind(shortcut_based_on_os("Shift-r"), run_new_window)
 compiler.bind("<Command-o>", open_file)
-compiler.bind("<Command-s>", save_as)
-compiler.bind("<Command-Shift-s>", save_as)
-compiler.bind("<Command-w>", exit)
+compiler.bind(shortcut_based_on_os("s"), save_as)
+compiler.bind(shortcut_based_on_os("Shift-s"), save_as)
+compiler.bind(shortcut_based_on_os("w"), exit)
 
 
 # Terminal
